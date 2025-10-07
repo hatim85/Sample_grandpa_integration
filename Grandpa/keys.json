@@ -1,0 +1,40 @@
+{
+  "validators": [
+    {
+      "id": 0,
+      "ed_sk_b64": "V8S94cBDOCbkiJHfoCd5+xLMQE80GfEdDexS2Jrzxps=",
+      "ed_pk_b64": "YLUYtmtQwY8oIuccE0Ek4n92ef5FERQP8S4cwOoIMWQ=",
+      "bls_sk_hex": null,
+      "bls_pk_hex": null
+    },
+    {
+      "id": 1,
+      "ed_sk_b64": "Bgb5tZ5gZ52J1Rsw5ML44pNBs5ZnwqLofMZhMq1nLPs=",
+      "ed_pk_b64": "3INxWw5ebIUF8cQJD+i983Ka37xC7zSuKdeVLsSx9NU=",
+      "bls_sk_hex": null,
+      "bls_pk_hex": null
+    },
+    {
+      "id": 2,
+      "ed_sk_b64": "vwNClgLBZnAWg1uHvfS/HsOZ3FICIepTMfGk5wedBhQ=",
+      "ed_pk_b64": "AE41WWH3zPpw91Lr1wuHYBuzfbrb+7Oc51CeCfKLAjQ=",
+      "bls_sk_hex": null,
+      "bls_pk_hex": null
+    },
+    {
+      "id": 3,
+      "ed_sk_b64": "C34PV5OStDzyuAq4K8WYTXmzSnDf7srrWXUTlx8fOTU=",
+      "ed_pk_b64": "WiDi6BhdHHOqPZDhxdHbKLNe6+SOpy+UBhel28UPCg4=",
+      "bls_sk_hex": null,
+      "bls_pk_hex": null
+    },
+    {
+      "id": 4,
+      "ed_sk_b64": "xQpdJj73RPUid9r9GyIPQNI1zQzJdNrfBpX9ARv0b7I=",
+      "ed_pk_b64": "VEC7WfuQ1P3oAWAwU79Disndqz9OXFX+DqDQ/d9/J48=",
+      "bls_sk_hex": null,
+      "bls_pk_hex": null
+    }
+  ],
+  "have_bls": false
+}
