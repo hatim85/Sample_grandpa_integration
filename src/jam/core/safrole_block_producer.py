@@ -10,12 +10,11 @@ Graypaper (GP) sections 4 and 14. It handles:
 
 This is a focused implementation without off-chain worker or networking components.
 """
-
+import requests
 import json
 import time
 import hashlib
 import secrets
-import os
 from typing import Dict, List, Any, Optional, Tuple
 from datetime import datetime, timezone
 
@@ -28,7 +27,11 @@ from ..utils.helpers import (
 )
 from ..utils.crypto_bridge import CryptoBridge
 from ..utils.bandersnatch_vrf import generate_safrole_vrf_signatures
-
+import sys, os
+grandpa_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../Grandpa'))
+if grandpa_dir not in sys.path:
+    sys.path.append(grandpa_dir)
+from grandpa_prod import finalize_block
 
 class SafroleBlockProducer:
     """
@@ -80,15 +83,6 @@ class SafroleBlockProducer:
         # Block production state
         self.produced_blocks = []
         self.last_authored_slot = -1
-
-        try:
-            grandpa_result = finalize_block(block)
-            block["grandpa_finalized"] = grandpa_result.get("finalized", False)
-            block["grandpa_justification"] = grandpa_result.get("justification", None)
-            print(f"🧑‍⚖️ Grandpa finalized: {block['grandpa_finalized']}")
-        except Exception as e:
-            print(f"⚠️  Grandpa finalization failed: {e}")
-            block["grandpa_finalized"] = False
         
         print(f"SafroleBlockProducer initialized:")
         print(f"  - Validator index: {self.validator_index}")
@@ -437,7 +431,6 @@ class SafroleBlockProducer:
             VRF signature as hex string
         """
         try:
-            import requests
             
             # Get validator keys for the ring
             validator_keys = self._get_validator_public_keys()
@@ -503,7 +496,7 @@ class SafroleBlockProducer:
             VRF output hash as hex string
         """
         try:
-            import requests
+            
             
             # Get validator keys for the ring
             validator_keys = self._get_validator_public_keys()
@@ -607,7 +600,6 @@ class SafroleBlockProducer:
             Prover ID or None if failed
         """
         try:
-            import requests
             
             # Check if we have a cached prover ID
             cache_key = f"prover_{self.validator_index}_{len(validator_keys)}"
@@ -860,8 +852,18 @@ class SafroleBlockProducer:
             block_hash = hashlib.blake2b(block_bytes, digest_size=32).hexdigest()
             block["block_hash"] = block_hash
 
+            # --- Grandpa Integration ---
+            keys_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../Grandpa/keys.json'))
+            config_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../Grandpa/nodes_config.json'))
+            with open(keys_path, 'r') as f:
+                keys_all = json.load(f)
+            with open(config_path, 'r') as f:
+                config = json.load(f)
+            validators_map = {v["id"]: v for v in keys_all["validators"]}
+            keys = validators_map.get(self.validator_index, keys_all["validators"][0])
+
             try:
-                grandpa_result = finalize_block(block)
+                grandpa_result = finalize_block(block, self.validator_index, keys, config)
                 block["grandpa_finalized"] = grandpa_result.get("finalized", False)
                 block["grandpa_justification"] = grandpa_result.get("justification", None)
                 print(f"🧑‍⚖️ Grandpa finalized: {block['grandpa_finalized']}")
