@@ -21,7 +21,13 @@ import tempfile
 from auth_integration import authorization_processor
 from typing import Optional
 # Add at the top, after imports
-from Grandpa.grandpa_prod import GrandpaRuntimeConfig, finalize_block
+_THIS_DIR = os.path.dirname(__file__)
+_PROJECT_ROOT = os.path.abspath(os.path.join(_THIS_DIR, '..'))
+GRANDPA_DIR = os.path.join(_PROJECT_ROOT, 'Grandpa')
+sys.path.append(_PROJECT_ROOT)
+sys.path.append(os.path.join(_PROJECT_ROOT, 'src'))
+sys.path.append(GRANDPA_DIR)  # Add Grandpa directory to path
+from grandpa_prod import GrandpaRuntimeConfig, finalize_block
 
 
 
