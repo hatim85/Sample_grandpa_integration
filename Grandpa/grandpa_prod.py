@@ -260,9 +260,32 @@ class DummyBlockchain:
             await gossip.gossip_block(BLOCK_BY_HASH[blk.hash])
             await asyncio.sleep(6)
 
+class GrandpaRuntimeConfig:
+    def __init__(self, keys_path, config_path):
+        self.keys_path = keys_path
+        self.config_path = config_path
+        self.reload()
+
+    def reload(self):
+        with open(self.keys_path) as f:
+            self.keys_all = json.load(f)
+        with open(self.config_path) as f:
+            self.config = json.load(f)
+
+    def get_keys(self, node_id):
+        validators_map = {v["id"]: v for v in self.keys_all["validators"]}
+        return validators_map.get(node_id)
+
+    def get_config(self):
+        return self.config
+
+# Usage in finalize_block:
+# Instead of loading files every time, keep GrandpaRuntimeConfig instance and call .reload() when needed.
+
 # ------------------ Persistence ------------------
 
 DB_FILE_TEMPLATE = "grandpa_node_{}.db"
+
 
 async def init_db(path):
     async with aiosqlite.connect(path) as db:

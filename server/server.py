@@ -20,6 +20,9 @@ from hashlib import sha256
 import tempfile
 from auth_integration import authorization_processor
 from typing import Optional
+# Add at the top, after imports
+from Grandpa.grandpa_prod import GrandpaRuntimeConfig, finalize_block
+
 
 
 # Add project root and src directory to sys.path so sibling packages are importable
@@ -27,6 +30,10 @@ _THIS_DIR = os.path.dirname(__file__)
 _PROJECT_ROOT = os.path.abspath(os.path.join(_THIS_DIR, '..'))
 sys.path.append(_PROJECT_ROOT)
 sys.path.append(os.path.join(_PROJECT_ROOT, 'src'))
+
+keys_path = os.path.join(_PROJECT_ROOT, "Grandpa", "keys.json")
+config_path = os.path.join(_PROJECT_ROOT, "Grandpa", "nodes_config.json")
+grandpa_runtime_config = GrandpaRuntimeConfig(keys_path, config_path)
 
 from jam.core.safrole_manager import SafroleManager
 from jam.utils.helpers import deep_clone
@@ -580,6 +587,29 @@ async def run_jam_reports(payload: dict = Body(...)):
     except Exception as e:
         logger.error(f"Error in run_jam_reports: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/update-grandpa-config")
+async def update_grandpa_config(keys: dict = Body(...), config: dict = Body(...)):
+    """
+    Update Grandpa keys and config at runtime.
+    Call this endpoint whenever validator set or keys change.
+    """
+    # Save new keys/config to disk or update GrandpaRuntimeConfig instance
+    with open(keys_path, "w") as f:
+        json.dump(keys, f)
+    with open(config_path, "w") as f:
+        json.dump(config, f)
+    # Optionally, trigger reload in GrandpaRuntimeConfig
+    grandpa_runtime_config.reload()
+    return {"success": True}
+
+@app.post("/finalize-block")
+async def finalize_block_api(block: dict = Body(...), node_id: int = 0):
+    # Use GrandpaRuntimeConfig for keys/config
+    keys = grandpa_runtime_config.get_keys(node_id)
+    config = grandpa_runtime_config.get_config()
+    result = finalize_block(block, node_id, keys, config)
+    return result
 
 @app.post("/process-block", response_model=StateResponse)
 async def process_block(request: BlockProcessRequest):

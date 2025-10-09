@@ -31,7 +31,6 @@ import sys, os
 grandpa_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../Grandpa'))
 if grandpa_dir not in sys.path:
     sys.path.append(grandpa_dir)
-from grandpa_prod import finalize_block
 
 class SafroleBlockProducer:
     """
@@ -58,15 +57,15 @@ class SafroleBlockProducer:
             validator_private_key: Private key for signing (generated if not provided)
         """
 
-        block = {
-            "header": header,
-            "body": body,
-            "block_hash": None  # Will be computed after assembly
-        }
+        # block = {
+        #     "header": header,
+        #     "body": body,
+        #     "block_hash": None  # Will be computed after assembly
+        # }
 
-        block_bytes = json.dumps(block, sort_keys=True).encode()
-        block_hash = hashlib.blake2b(block_bytes, digest_size=32).hexdigest()
-        block["block_hash"] = block_hash
+        # block_bytes = json.dumps(block, sort_keys=True).encode()
+        # block_hash = hashlib.blake2b(block_bytes, digest_size=32).hexdigest()
+        # block["block_hash"] = block_hash
 
         self.state_file_path = state_file_path or self._get_default_state_file_path()
         self.validator_index = validator_index
@@ -760,6 +759,17 @@ class SafroleBlockProducer:
             
         except Exception as e:
             print(f"⚠️  Error updating entropy accumulator: {e}")
+
+    def finalize_block_via_api(self, block):
+        url = "http://localhost:8000/finalize-block"  # Use correct port for your server
+        payload = {"block": block, "node_id": self.validator_index}
+        try:
+            response = requests.post(url, json=payload, timeout=30)
+            response.raise_for_status()
+            return response.json()
+        except Exception as e:
+            print(f"Error finalizing block via API: {e}")
+            return {"finalized": False, "justification": None}
     
     def produce_block(self, target_slot: Optional[int] = None) -> Optional[Dict[str, Any]]:
         """
@@ -846,24 +856,16 @@ class SafroleBlockProducer:
                 "body": body,
                 "block_hash": None  # Will be computed after assembly
             }
+
+            block["audited"] = True
             
             # Step 9: Compute block hash
             block_bytes = json.dumps(block, sort_keys=True).encode()
             block_hash = hashlib.blake2b(block_bytes, digest_size=32).hexdigest()
             block["block_hash"] = block_hash
 
-            # --- Grandpa Integration ---
-            keys_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../Grandpa/keys.json'))
-            config_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../Grandpa/nodes_config.json'))
-            with open(keys_path, 'r') as f:
-                keys_all = json.load(f)
-            with open(config_path, 'r') as f:
-                config = json.load(f)
-            validators_map = {v["id"]: v for v in keys_all["validators"]}
-            keys = validators_map.get(self.validator_index, keys_all["validators"][0])
-
             try:
-                grandpa_result = finalize_block(block, self.validator_index, keys, config)
+                grandpa_result = self.finalize_block_via_api(block)
                 block["grandpa_finalized"] = grandpa_result.get("finalized", False)
                 block["grandpa_justification"] = grandpa_result.get("justification", None)
                 print(f"🧑‍⚖️ Grandpa finalized: {block['grandpa_finalized']}")
@@ -879,6 +881,11 @@ class SafroleBlockProducer:
             self.produced_blocks.append(block)
             self.last_authored_slot = target_slot
             self.current_slot = target_slot
+            
+            # Update current slot in the state
+            self.current_state["current_slot"] = self.current_slot
+            with open(self.state_file_path, "w") as f:
+                json.dump(self.current_state, f, indent=2)
             
             print(f"✅ Successfully produced block for slot {target_slot}")
             print(f"   Block hash: {block['block_hash'][:32]}...")

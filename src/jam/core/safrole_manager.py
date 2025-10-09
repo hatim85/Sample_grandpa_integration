@@ -79,15 +79,25 @@ class SafroleManager:
     def process_block(self, block_input):
         """Process a block and update the state."""
         pre_state = self.state
-        print(f"Prestate state****************************: {pre_state}");
+        print(f"Prestate state****************************: {pre_state}")
+        
+        # Initialize tau to -1 if it doesn't exist (for genesis block)
+        if "tau" not in pre_state:
+            pre_state["tau"] = -1
+            
+        # Debug output for slot and tau values
+        print(f"Processing block - slot: {block_input['slot']}, current tau: {pre_state['tau']}")
+        
         if block_input["slot"] <= pre_state["tau"]:
-            raise ValueError("bad_slot")
+            raise ValueError(f"bad_slot: block slot {block_input['slot']} is not greater than tau {pre_state['tau']}")
 
         is_gap_block = block_input["slot"] > pre_state["tau"] + 1
         if is_gap_block and block_input.get("extrinsic"):
             raise ValueError("unexpected_ticket")
 
         current_state = deep_clone(pre_state)
+        # Update tau to the current block's slot
+        current_state["tau"] = block_input["slot"]
 
         prev_epoch, prev_m = get_epoch_and_slot_phase(
             pre_state["tau"], current_state["E"]

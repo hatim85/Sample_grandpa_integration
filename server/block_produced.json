@@ -1,16 +1,16 @@
 {
   "header": {
     "slot": 1,
-    "parent_hash": "0x3fdc6977146fc8b7e4fc99926786f5b4293719d5df1975e92dc8167bbe2978c7",
+    "parent_hash": "0x28ef22b0001090d13747b10457ce4db8f0b9b1c174f55f14e4ffea9ed27a855f",
     "state_root": "0xdaf6db99088287daa54ba7695b0a53809ccf34620c242b9a9592ad0b603c4440",
     "extrinsics_root": "0xadab084ddf39a78a0fc735b8da4980f641a5c2634e536bed2a0b26410d242a75",
-    "entropy": "0xbf528ab62e650b35988746750abb57b1b582d1dffe97ad9551a325fa3b67bc54",
-    "timestamp": 1759567943,
+    "entropy": "0x913a2197733a9555e1ccf3ba06998a8f7bda42d91b4a699ba9707129f485f8e0",
+    "timestamp": 1759993545,
     "author_index": 0,
     "author_key": "0x4418fb8c85bb3985394a8c2756d3643457ce614546202a2f50b093d762499ace",
-    "seal_signature": "0xefb3a31e900768bc262557e468f5993cd455dd568b5a3df6a2ff241d75afb543a499867c9780e98b3e6cddbc32a587b473d7d51f15bfe9b88c17417f085c2912a9b53a3a939bcc1ef38acef5c2841d8868058194423b77e8919c4b44cd108011",
-    "vrf_output": "0x9873b0ab52d5b9c4a23e5d2b4ee9456ccca023909a77737f57720ab38a2d6db6",
-    "signature": "0xefb3a31e900768bc262557e468f5993cd455dd568b5a3df6a2ff241d75afb543a499867c9780e98b3e6cddbc32a587b473d7d51f15bfe9b88c17417f085c2912a9b53a3a939bcc1ef38acef5c2841d8868058194423b77e8919c4b44cd108011",
+    "seal_signature": "0xdbde19201ab8808301bdde8de92d03743b219404b6413e7f55e7672523081f900644ae6ef70a773a471fe1d67ab323e12c539bc0bfe6dc8e70d07a3e77ff592c",
+    "vrf_output": "0x672857eb264b1e056cfcb7362803c0b474e90ee8c61c9247f10940245d1d705f",
+    "signature": "0xdbde19201ab8808301bdde8de92d03743b219404b6413e7f55e7672523081f900644ae6ef70a773a471fe1d67ab323e12c539bc0bfe6dc8e70d07a3e77ff592c",
     "merkle_root": "0xdaf6db99088287daa54ba7695b0a53809ccf34620c242b9a9592ad0b603c4440"
   },
   "body": {
@@ -18,15 +18,18 @@
     "preimages": [],
     "extrinsics_count": 0
   },
-  "block_hash": "0x8673fb5ccfb9fadc5f54878d98000e6d244cb52c33bd21e8c7792fed712528fb",
+  "block_hash": "f2f4fcfdf880eb6cd05d0c4adfef1f90f02f10c4b780acc1051994b786862d42",
+  "audited": true,
+  "grandpa_finalized": false,
+  "grandpa_justification": null,
   "metadata": {
-    "produced_at": "2025-10-04T08:52:23.210429+00:00",
+    "produced_at": "2025-10-09T07:06:15.144124+00:00",
     "producer_index": 0,
     "ready_for_broadcast": true,
     "graypaper_compliant": true,
     "vrf_components": {
-      "hs_seal": "0xefb3a31e900768bc262557e468f5993cd455dd568b5a3df6a2ff241d75afb543a499867c9780e98b3e6cddbc32a587b473d7d51f15bfe9b88c17417f085c2912a9b53a3a939bcc1ef38acef5c2841d8868058194423b77e8919c4b44cd108011",
-      "hv_entropy": "0x9873b0ab52d5b9c4a23e5d2b4ee9456ccca023909a77737f57720ab38a2d6db6"
+      "hs_seal": "0xdbde19201ab8808301bdde8de92d03743b219404b6413e7f55e7672523081f900644ae6ef70a773a471fe1d67ab323e12c539bc0bfe6dc8e70d07a3e77ff592c",
+      "hv_entropy": "0x672857eb264b1e056cfcb7362803c0b474e90ee8c61c9247f10940245d1d705f"
     }
   }
 }
